@@ -56,6 +56,7 @@ void mainCall()
 
     const u_int CheckHollowOffset = 0x00203A39; //offset of the opcode we want to patch
     const opcode DefaultOpcode = 0x40000001ACB0B60F; // movzx esi,byte ptr [rax+000001AC]
+		const opcode NewOpcode =     0x40909000000000BE; // mov esi,#0x00000000;nop;nop
 
     pointer ExeBaseAddress = (pointer)GetModuleHandleW(0);
     pointer pCheckHollow= ExeBaseAddress+CheckHollowOffset;
@@ -68,10 +69,7 @@ void mainCall()
     }
 
     //Apply Patch to game
-
-    // movzx esi,byte ptr [rax+000001AC] -> movzx esi,byte ptr [rax+000001AB]
-    byte patch = 0xAB;
-    int succsess = WriteProcessMemory(GetCurrentProcess(),(void *)(pCheckHollow+3),&patch,1,0);
+    int succsess = WriteProcessMemory(GetCurrentProcess(),(void *)(pCheckHollow),&NewOpcode,8,0);
     if(succsess==0){
         ErrorWindow();
     }
